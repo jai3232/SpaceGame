@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<canvas id="game" width="800" height="600"></canvas>
+<script type="text/javascript">
+var canvas;
+var canvascontext;
+var ballX = 50;
+var ballY = 50;
+var ballXSpeed = 5;
+var ballYSpeed = 5;
+var fps = 30;
+var paddle1Y = 250;
+var paddleHeight = 100;
+
+window.onload = function(){
+	canvas = document.getElementById("game");
+	canvascontext = canvas.getContext("2d");
+	canvascontext.fillStyle = "black";
+	canvascontext.fillRect(0, 0,  canvas.width, canvas.height);
+	setInterval(update, 1000/fps);
+	canvas.addEventListener('mousemove', function(e){
+		var mousePos = calculateMousePos(e);
+		paddle1Y = mousePos.y - paddleHeight/2;
+	});
+
+};
+
+function update() {
+	if(ballX < 0) {
+		
+		if(ballY > paddle1Y && ballY < (paddle1Y + paddleHeight)) {
+			ballXSpeed = -ballXSpeed;	
+		}
+		else
+			ballReset();
+		
+	}
+	if(ballX > canvas.width) {
+		ballXSpeed = -ballXSpeed;
+	}
+	if(ballY > canvas.height || ballY < 0) {
+		ballYSpeed = -ballYSpeed;
+	}
+	ballX = ballX + ballXSpeed;
+	ballY = ballY + ballYSpeed;
+	canvascontext.fillStyle = "black";
+	canvascontext.fillRect(0, 0,  canvas.width, canvas.height);
+	canvascontext.fillStyle = "red";
+	canvascontext.beginPath();
+	canvascontext.arc(ballX, ballY, 10, 0, Math.PI * 2, true);
+	canvascontext.fill();
+	canvascontext.fillStyle = "white";
+	canvascontext.fillRect(0, paddle1Y, 10, paddleHeight);
+//	console.log(ballX);
+}
+
+function calculateMousePos(e) {
+	var rect = canvas.getBoundingClientRect();
+	var root = document.documentElement;
+	var mouseX = e.clientX - rect.left - root.scrollLeft;
+	var mouseY = e.clientY - rect.top - root.scrollTop;
+	return {
+		x:mouseX,
+		y:mouseY
+	}
+}
+
+
+function ballReset() {
+	ballX = canvas.width/2;
+	ballY = canvas.height/2;
+}
+</script>
+</body>
+</html>
