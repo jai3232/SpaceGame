@@ -1,0 +1,8 @@
+body {
+	background: #aaa;
+}
+#game {
+	/*width: 1024px;*/
+	margin: auto;
+	display: block;
+}
