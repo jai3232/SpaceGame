@@ -78,10 +78,6 @@ $(document).ready(function(){
 			ctx.drawImage(fuel_icon, 700, 200, 50, 50);
 		}
 
-		ctx.font = "30px Arial";
-		ctx.fillText("Hello World",10,50);
-
-
 		setInterval(update, 1000/fps);
 		canvas.addEventListener('mousemove', function(e){
 			// var mousePos = calculateMousePos(e);
