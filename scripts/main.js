@@ -15,6 +15,7 @@ $(document).ready(function(){
 		ctx = canvas.getContext("2d");
 		
 		var background = new Image();
+		var background2 = new Image();
 		var logo = new Image();
 		var plus = new Image();
 		var minus = new Image();
@@ -25,8 +26,12 @@ $(document).ready(function(){
 		var timer = new Image();
 		var fuel = new Image();
 		var fuel_icon = new Image();
+		var mars = new Image();
+		var jupiter = new Image();
+		var saturn = new Image();
 
 		background.src = "images/background.jpg";
+		background2.src = "images/background.jpg";
 		logo.src = "images/logo.png";
 		plus.src = "images/plus.png";
 		minus.src = "images/minus.png";
@@ -37,9 +42,14 @@ $(document).ready(function(){
 		timer.src = "images/timer.png";
 		fuel.src = "images/fuel.png";
 		fuel_icon.src = "images/fuel-icon.png";
+		mars.src = "images/mars.png";
+		jupiter.src = "images/jupiter.png";
+		saturn.src = "images/saturn.png";
+
 
 		background.onload = function(){
 			ctx.drawImage(background, 0, 0);
+			ctx.drawImage(background2, 0 - canvas.width, 0);
 			ctx.fillStyle = "#096643"; //#090043
 			ctx.fillRect(0, 0,  canvas.width, 40);
 			ctx.fillStyle = "white"; 
@@ -77,6 +87,53 @@ $(document).ready(function(){
 		fuel_icon.onload = function() {
 			ctx.drawImage(fuel_icon, 700, 200, 50, 50);
 		}
+		// mars.onload = function() {
+		// 	ctx.drawImage(mars, 750, 50, 150, 150);
+		// }
+		// jupiter.onload = function() {
+		// 	//ctx.drawImage(jupiter,530, 150, 100, 100);	
+		// }
+
+		var bspeed = 0;
+		var jupiterSpeed = 500;
+		var marsSpeed = 750;
+		var saturnSpeed = 880;
+
+		function draw() {
+
+			//clearing the canvas
+			ctx.clearRect(0, 40, canvas.width, canvas.height);
+			ctx.drawImage(background, bspeed, 40);
+			ctx.drawImage(background2, bspeed + canvas.width, 40);
+			ctx.drawImage(logo, 0, 0, 120, 80);
+			ctx.drawImage(jupiter, jupiterSpeed, 250, 100, 100);	
+			ctx.drawImage(mars, marsSpeed, 50, 150, 150);
+			ctx.drawImage(saturn, saturnSpeed, 500, 100, 60);
+			//ctx.drawImage(mars, 800, 200, 50, 50);
+
+			// drawing a black circle
+			ctx.beginPath();
+			ctx.arc(bspeed + canvas.width, 100, 25, 0, 2*Math.PI);
+			ctx.fillStyle = "white";
+			ctx.fill();
+
+			// incrementing the x coordinate by one on each frame
+			bspeed -= 0.5;
+			jupiterSpeed -= 1;
+			marsSpeed -= 0.25;
+			saturnSpeed -= 2;
+
+			// if x coordinate exceeds the width, reset it to 0.
+			if(bspeed < -canvas.width) bspeed = 0;
+			if(jupiterSpeed < -100) jupiterSpeed = canvas.width;
+			if(marsSpeed < -150) marsSpeed = canvas.width;
+			if(saturnSpeed < -150) saturnSpeed = canvas.width;
+
+			// // call draw() again when a new frame needs to be drawn
+			requestAnimationFrame(draw);
+		}
+
+		draw();
 
 		setInterval(update, 1000/fps);
 		canvas.addEventListener('mousemove', function(e){
