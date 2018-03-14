@@ -10,7 +10,7 @@ $(document).ready(function(){
 	var paddle1Y = 250;
 	var paddleHeight = 100;
 
-	window.onload = function(){
+	//window.onload = function(){
 		canvas = document.getElementById("game");
 		ctx = canvas.getContext("2d");
 		
@@ -142,7 +142,7 @@ $(document).ready(function(){
 		});
 		canvas.addEventListener('mousedown', clicked, false);
 
-	};
+	//};
 });
 
 function update() {
