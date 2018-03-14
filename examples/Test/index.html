@@ -40,6 +40,7 @@
 		    rotatingRight: false
 		}
 
+
 		canvas = document.getElementById("game");
 		ctx = canvas.getContext("2d");
 
@@ -69,6 +70,15 @@
 		        ctx.fill();
 		    }
 		    ctx.restore();
+		}
+
+		function drawSpaceship2(x, y) 
+		{
+			var spaceship2 = new Image();
+			spaceship2.src = "../../images/spaceship.png";
+			if(x === undefined) { x = 20;}
+			if(y === undefined) { y = 300;}
+			ctx.drawImage(spaceship2, x, y, 60, 30);
 		}
 
 		function updateSpaceship()
@@ -101,6 +111,7 @@
 
 		    // Begin drawing
 		    drawSpaceship();
+		    drawSpaceship2(spaceship.position.x, spaceship.position.y);
 		    /* other draw methods (to add later) */
 
 		    requestAnimationFrame(draw);
@@ -144,6 +155,11 @@
 		        case 38:
 		            // Up Arrow key
 		            spaceship.engineOn = true;
+		            break;
+		         case 40:
+		            // Up Arrow key
+		            //spaceship.engineOn = true;
+		            console.log('down');
 		            break;
 		    }
 		}
