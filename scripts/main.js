@@ -12,6 +12,10 @@ var paddleHeight = 100;
 var spaceship = new Image();
 var spaceshipX;
 var spaceshipY;
+var pBullets = [];
+var enemies = [];
+var astroids = [];
+var totalEnemy = 0;
 
 window.onload = function(){
 	canvas = document.getElementById("game");
@@ -32,6 +36,7 @@ window.onload = function(){
 	var mars = new Image();
 	var jupiter = new Image();
 	var saturn = new Image();
+	var enemy = new Image();
 
 	background.src = "images/background.jpg";
 	background2.src = "images/background.jpg";
@@ -107,10 +112,14 @@ window.onload = function(){
 	var marsSpeed = 750;
 	var saturnSpeed = 880;
 
+	document.addEventListener('keydown', keyPressed);
+	document.addEventListener('keyup', keyPressed);
+
 	function draw() {
 
 		//clearing the canvas
 		ctx.clearRect(0, 40, canvas.width, canvas.height);
+
 		ctx.drawImage(background, bspeed, 40);
 		ctx.drawImage(background2, bspeed + canvas.width, 40);
 		ctx.drawImage(logo, 0, 0, 120, 80);
@@ -139,6 +148,29 @@ window.onload = function(){
 
 		// // call draw() again when a new frame needs to be drawn
 		drawSpaceShip();
+		pBullets.forEach(function(bullet) {
+			bullet.update();
+			bullet.draw();
+		});
+
+		if(Math.random() < 0.14 && totalEnemy <= 10) {
+			enemies.push(new Enemy());
+			totalEnemy++;
+		}
+		  
+		enemies.forEach(function(enemy) {
+			enemy.update();
+		});
+		//console.log(totalEnemy);
+		// enemies = enemies.filter(function(enemy) {
+		// 	return enemy.active;
+		// });
+
+		enemies.forEach(function(enemy) {
+	    	enemy.draw();
+		});
+
+
 		requestAnimationFrame(draw);
 	}
 
@@ -151,20 +183,88 @@ window.onload = function(){
 	});
 	canvas.addEventListener('mousedown', clicked, false);
 
-	document.addEventListener('keydown', keyPressed);
-
 };
 
 
-function update() {
+// function update() {
 	
-}
+// }
 
 function drawSpaceShip() {
 	// if(x === undefined) { x = 20;}
 	// if(y === undefined) { y = 300;}
 	ctx.drawImage(spaceship, spaceshipX, spaceshipY, 100, 50);
 }
+////////BULLET/////
+function Bullet(bullet) {
+  this.active = true;
+  this.color = "yellow";
+  this.xVel = -bullet.vel;
+  this.width = 2;
+  this.height = 4;
+  this.x = bullet.x;
+  this.y = bullet.y;
+}
+
+Bullet.prototype.inBounds = function() {
+  return this.x >= 0 && this.x <= canvas.width &&
+         this.y >= 0 && this.y <= canvas.height;
+};
+
+Bullet.prototype.draw = function() {
+  ctx.fillStyle = this.color;
+  ctx.fillRect(this.x, this.y, this.width, this.height);
+};
+
+Bullet.prototype.update = function() {
+  this.x -= this.xVel;
+  this.active = this.inBounds() && this.active;
+};
+
+Bullet.prototype.die = function() {
+  this.active = false;
+};
+///END OF BULLET//
+
+//ENEMIES///
+
+function Enemy() {
+  this.active = true;
+  this.color = "red";
+  this.x = 1200 + Math.floor(300 * Math.random());
+  this.y = 40 + canvas.height * Math.random();
+  this.xVel = 0;
+  this.yVel = 4;
+  this.width = 30;
+  this.height = 30;
+  this.timeCounter = 0;
+}
+
+Enemy.prototype.inBounds = function() {
+  return this.x >= 0 && this.x <= canvas.width &&
+         this.y >= 0 && this.y <= canvas.height;  
+};
+
+Enemy.prototype.draw = function() {
+  ctx.fillStyle = this.color;
+  ctx.fillRect(this.x, this.y, this.width, this.height);
+};
+
+Enemy.prototype.update = function() {
+	this.x -= 2;//this.xVel;
+	//this.y -= this.yVel;
+	this.active = this.active && this.inBounds();
+	if(this.x == -2)
+		totalEnemy--;
+	console.log(totalEnemy);
+};
+
+Enemy.prototype.die = function() {
+  this.active = false;
+  score += 10;
+};
+
+// END OF ENEMIES //
 
 function clicked(e) {
 	var canvas = document.getElementById("game");
@@ -181,24 +281,29 @@ function keyPressed(e) {
     {
         case 37:
             // Left Arrow key
-            spaceshipX -= 10;
-            console.log('Left:'+spaceshipX);
+            spaceshipX -= 5;
+            //console.log('Left:'+spaceshipX);
             break;
         case 39:
             // Right Arrow key
-            spaceshipX += 10;
-            console.log('Right:'+spaceshipX);
+            spaceshipX += 5;
+            //console.log('Right:'+spaceshipX);
             break;
         case 38:
             // Up Arrow key
-            spaceshipY -= 10;
-            console.log('Up:'+spaceshipY);
+            spaceshipY -= 5;
+            //console.log('Up:'+spaceshipY);
             break;
-         case 40:
+        case 40:
             // Down Arrow key
-            spaceshipY += 10;
-            console.log('Down:'+spaceshipY);
+            spaceshipY += 5;
+            //console.log('Down:'+spaceshipY);
             break;
+        case 32:
+        	pBullets.push(new Bullet({vel: 7, x: spaceshipX + spaceship.width / 4, y: spaceshipY + spaceship.height / 4}));
+        	//console.log('Shoot');
+        	break;
+
     }
 }
 
