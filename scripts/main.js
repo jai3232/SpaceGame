@@ -181,22 +181,22 @@ function keyPressed(e) {
     {
         case 37:
             // Left Arrow key
-            spaceshipX -= 5;
+            spaceshipX -= 10;
             console.log('Left:'+spaceshipX);
             break;
         case 39:
             // Right Arrow key
-            spaceshipX += 5;
+            spaceshipX += 10;
             console.log('Right:'+spaceshipX);
             break;
         case 38:
             // Up Arrow key
-            spaceshipY -= 5;
+            spaceshipY -= 10;
             console.log('Up:'+spaceshipY);
             break;
          case 40:
             // Down Arrow key
-            spaceshipY += 5;
+            spaceshipY += 10;
             console.log('Down:'+spaceshipY);
             break;
     }
