@@ -11,6 +11,7 @@ var pBullets = [];
 var enemies = [];
 var astroids = [];
 var totalEnemy = 0;
+var totalAstroid = 0;
 
 window.onload = function(){
 	canvas = document.getElementById("game");
@@ -137,6 +138,10 @@ window.onload = function(){
 			bullet.draw();
 		});
 
+		pBullets = pBullets.filter(function(bullet) {
+			return bullet.active;
+		});
+
 		if(Math.random() < 0.14 && totalEnemy <= 7) {
 			enemies.push(new Enemy());
 			totalEnemy++;
@@ -147,6 +152,28 @@ window.onload = function(){
 			enemy.draw();
 		});
 
+		enemies = enemies.filter(function(enemy) {
+			//console.log(enemy.active);
+			return enemy.active;
+		});
+
+		if(Math.random() < 0.1 && totalAstroid <= 3) {
+			astroids.push(new Astroid());
+			totalAstroid++;
+		}
+
+		astroids.forEach(function(astroid) {
+			astroid.update();
+			astroid.draw();
+		});
+
+		astroids = astroids.filter(function(enemy) {
+			//console.log(enemy.active);
+			return enemy.active;
+		});
+
+		//console.log(totalEnemy);
+		collisionOccurs();
 		requestAnimationFrame(draw);
 	}
 
@@ -223,20 +250,21 @@ Bullet.prototype.die = function() {
 
 function Enemy() {
 	this.active = true;
-	this.color = "red";
 	this.speed = 4;
 	temp = 1200 + Math.floor(300 * Math.random());
 	temp = temp - (temp % this.speed);
 	this.x = temp;
-	this.y = 40 + canvas.height * Math.random();	
-	this.width = 40;
-	this.height = 30;
+	yTemp = Math.floor(canvas.height * Math.random()) - 40;
+	this.y = 40 + yTemp;
+	this.width = 60;
+	this.height = 40;
 	this.img = new Image();
 	this.img.src = "images/enemy.png";
+	if(this.y > 600) console.log("XXX:"+yTemp);
 }
 
 Enemy.prototype.inBounds = function() {
-  return this.x >= 0 && this.x <= canvas.width &&
+  return this.x >= 0 && this.x <= canvas.width + 300 &&
          this.y >= 0 && this.y <= canvas.height;  
 };
 
@@ -256,10 +284,100 @@ Enemy.prototype.update = function() {
 
 Enemy.prototype.die = function() {
   this.active = false;
-  score += 10;
+  //score += 10;
+  totalEnemy--;
+  console.log("die");
 };
 
 // END OF ENEMIES //
+
+// AESTROID //
+
+function Astroid() {
+	this.active = true;
+	this.speed = 3;
+	temp = 1200 + Math.floor(200 * Math.random());
+	temp = temp - (temp % this.speed);
+	this.x = temp;
+	this.y = 40 + (canvas.height * Math.random() > 300 ? 300 : canvas.height * Math.random());	
+	this.width = 70;
+	this.height = 70;
+	this.img = new Image();
+	this.img.src = Math.round(Math.random()) ? "images/aestroid_brown.png" : "images/aestroid_grey.png";
+	this.hit = 0;
+	
+}
+
+Astroid.prototype.inBounds = function() {
+  return this.x >= 0 && this.x <= canvas.width + 200 &&
+         this.y >= 0 && this.y <= canvas.height;  
+};
+
+Astroid.prototype.draw = function() {
+  ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+  //ctx.drawImage(this.img[1], this.x, this.y, this.width, this.height);
+};
+
+Astroid.prototype.update = function() {
+	this.x -= this.speed;
+	this.active = this.active && this.inBounds();
+	if(this.x == -this.speed)
+		totalAstroid--;
+};
+
+Astroid.prototype.die = function() {
+	this.hit++;
+	if(this.hit == 2) {
+		this.active = false;
+		//score += 10;
+		totalAstroid--;
+		this.hit = 0;
+		console.log("astroid destroyed!");
+	}
+	
+};
+
+// END OF AESTROID
+
+
+//// COLLISION
+
+function collisionCheck(a, b) {
+	return a.x < b.x + b.width &&
+		a.x + a.width > b.x &&
+		a.y < b.y + b.height &&
+		a.y + a.height > b.y;
+}
+
+function collisionOccurs() {
+	pBullets.forEach(function(bullet) {
+		enemies.forEach(function(enemy) {
+			if (collisionCheck(bullet, enemy)) {
+				bullet.die();
+				enemy.die();
+			}
+		});
+	});
+
+	pBullets.forEach(function(bullet) {
+		astroids.forEach(function(astroid){
+			if(collisionCheck(bullet, astroid)) {
+				bullet.die();
+				astroid.die();
+			}
+		});
+	});
+	// enemies.forEach(function(enemy) {
+	// 	if (collisionCheck(enemy, player)) {
+	// 		if (hit_delay === 0) {
+	// 			enemy.die();
+	// 			//player.getHit();
+	// 		}
+	// 	}
+	// });
+}
+
+//// END OF COLLISION
 
 function clicked(e) {
 	var canvas = document.getElementById("game");
