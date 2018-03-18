@@ -15,11 +15,50 @@
 	</style>
 </head>
 <body>
-<canvas id="game" width="800" height="600" style="">
+<canvas id="game" width="800" height="600" style="background: white;">
 	Sorry, your browser does not allow canvas element.
 </canvas>
+<script type="text/javascript">
+	canvas = document.getElementById("game");
+	ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#096643"; //#090043
+	var rot = 0;
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.save();
+		ctx.rotate(Math.PI/4);
+		//ctx.fillRect(100, 50, 100, 50);
+		//ctx.rotate(-Math.PI/4);
+		ctx.translate(150, 75);
+		ctx.rotate(rot * Math.PI/180);
+		ctx.fillRect(-50, -25, 100, 50);
+		ctx.rotate(Math.PI/2);
+		ctx.fillRect(-50, -25, 100, 50);
+		//ctx.rotate(30 * Math.PI / 180);
+		rot = rot + 10;
+		//console.log(rot);
+		ctx.restore();	
+		
+	}
+	x = setInterval(draw, 100);
+	// draw1();
+	// function draw1() {
+	// 	rot = rot + 1;
+	// 	console.log(rot);
+	// 	x = setInterval(draw1, 1000);
+	// }
+
+	// var intervalID = window.setInterval(myCallback, 500);
+
+	// function myCallback() {
+	//   rot = rot + 1;
+	//   console.log(rot);
+	// }
+
+	
+</script>
 <script>
-	window.onload = function(){
+	window.onloads = function(){
 		var spaceship =
 		{
 		    color: "black",

@@ -10,8 +10,10 @@ var fps = 30;
 var pBullets = [];
 var enemies = [];
 var astroids = [];
+var fuels = [];
 var totalEnemy = 0;
 var totalAstroid = 0;
+var totalFuel = 0;
 
 window.onload = function(){
 	canvas = document.getElementById("game");
@@ -29,8 +31,6 @@ window.onload = function(){
 	var timer = new Image();
 	var fuel = new Image();
 	var fuel_icon = new Image();
-	var mars = new Image();
-	var jupiter = new Image();
 	var saturn = new Image();
 	var enemy = new Image();
 
@@ -46,8 +46,6 @@ window.onload = function(){
 	timer.src = "images/timer.png";
 	fuel.src = "images/fuel.png";
 	fuel_icon.src = "images/fuel-icon.png";
-	mars.src = "images/mars.png";
-	jupiter.src = "images/jupiter.png";
 	saturn.src = "images/saturn.png";
 	
 	background.onload = function(){
@@ -98,13 +96,15 @@ window.onload = function(){
 	// }
 
 	var bspeed = 0;
-	var jupiterSpeed = 500;
 	var marsSpeed = 750;
 	var saturnSpeed = 880;
 
 	document.addEventListener('keydown', keyPressed);
 	document.addEventListener('keyup', keyUp);
 	player = new Player();
+	var jupiter = new Jupiter();
+	var mars = new Mars();
+	//jup.draw();
 
 	function draw() {
 
@@ -114,19 +114,17 @@ window.onload = function(){
 		ctx.drawImage(background, bspeed, 40);
 		ctx.drawImage(background2, bspeed + canvas.width, 40);
 		ctx.drawImage(logo, 0, 0, 120, 80);
-		ctx.drawImage(jupiter, jupiterSpeed, 250, 100, 100);	
-		ctx.drawImage(mars, marsSpeed, 50, 150, 150);
 		ctx.drawImage(saturn, saturnSpeed, 500, 70, 40);
 
 		// incrementing the x coordinate by one on each frame
 		bspeed -= 0.5;
-		jupiterSpeed -= 1;
+		//jupiterSpeed -= 1;
 		marsSpeed -= 0.25;
 		saturnSpeed -= 3;
 
 		// if x coordinate exceeds the width, reset it to 0.
 		if(bspeed < -canvas.width) bspeed = 0;
-		if(jupiterSpeed < -100) jupiterSpeed = canvas.width;
+		//if(jupiterSpeed < -100) jupiterSpeed = canvas.width;
 		if(marsSpeed < -150) marsSpeed = canvas.width;
 		if(saturnSpeed < -150) saturnSpeed = canvas.width;
 
@@ -172,7 +170,26 @@ window.onload = function(){
 			return enemy.active;
 		});
 
-		//console.log(totalEnemy);
+		if(Math.random() < 0.1 && totalFuel <= 1) {
+			fuels.push(new Fuel());
+			totalFuel++;
+		}
+
+		fuels.forEach(function(fuel) {
+			fuel.update();
+			fuel.draw();
+		});
+
+		fuels = fuels.filter(function(fuel) {
+			//console.log(enemy.active);
+			return fuel.active;
+		});
+
+		
+		jupiter.update();
+		mars.update();
+
+		//console.log(totalFuel);
 		collisionOccurs();
 		requestAnimationFrame(draw);
 	}
@@ -192,6 +209,55 @@ window.onload = function(){
 // function update() {
 	
 // }
+
+
+/// PLANETS ///
+
+function Jupiter() {
+	this.x = 500;
+	this.y = 250;
+	this.width =  100;
+	this.height = 100;
+	this.speed = -1;
+	this.img = new Image();
+	this.img.src = "images/jupiter.png";
+	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);	
+}
+Jupiter.prototype.update = function() {
+	this.x += this.speed;
+	if(this.x < -100)
+		this.x = canvas.width + this.width;
+	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+}
+
+function Mars() {	
+	this.x = 750;
+	this.y = 50;
+	this.width = 150;
+	this.height = 150;
+	this.speed = -0.25;
+	this.img = new Image();
+	this.img.src = "images/mars.png";
+	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+	// 	ctx.drawImage(saturn, saturnSpeed, 500, 70, 40);
+
+	// 	// incrementing the x coordinate by one on each frame
+	// 	bspeed -= 0.5;
+	// 	//jupiterSpeed -= 1;
+	// 	marsSpeed -= 0.25;
+	// 	saturnSpeed -= 3;
+	// 	var marsSpeed = 750;
+	// var saturnSpeed = 880;
+
+}
+Mars.prototype.update = function() {
+	this.x += this.speed;
+	if(this.x < -this.width)
+		this.x = canvas.width + this.width;
+	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+}
+
+/// END PLANETS
 
 ///////PLAYER/////////
 
@@ -254,8 +320,7 @@ function Enemy() {
 	temp = 1200 + Math.floor(300 * Math.random());
 	temp = temp - (temp % this.speed);
 	this.x = temp;
-	yTemp = Math.floor(canvas.height * Math.random()) - 40;
-	this.y = 40 + yTemp;
+	this.y = 40 + Math.floor((canvas.height - 70) * Math.random()) ;
 	this.width = 60;
 	this.height = 40;
 	this.img = new Image();
@@ -283,6 +348,8 @@ Enemy.prototype.update = function() {
 };
 
 Enemy.prototype.die = function() {
+  this.img.src = "images/enemy-hit.png";
+  ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   this.active = false;
   //score += 10;
   totalEnemy--;
@@ -299,7 +366,7 @@ function Astroid() {
 	temp = 1200 + Math.floor(200 * Math.random());
 	temp = temp - (temp % this.speed);
 	this.x = temp;
-	this.y = 40 + (canvas.height * Math.random() > 300 ? 300 : canvas.height * Math.random());	
+	this.y = 40 + Math.floor((canvas.height - 70) * Math.random()) ;
 	this.width = 70;
 	this.height = 70;
 	this.img = new Image();
@@ -328,6 +395,8 @@ Astroid.prototype.update = function() {
 Astroid.prototype.die = function() {
 	this.hit++;
 	if(this.hit == 2) {
+		this.img.src = "images/aestroid_grey-hit.png";
+  		ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
 		this.active = false;
 		//score += 10;
 		totalAstroid--;
@@ -339,6 +408,52 @@ Astroid.prototype.die = function() {
 
 // END OF AESTROID
 
+// FUEL
+
+function Fuel() {
+	this.active = true;
+	this.speed = 2;
+	temp = 30 + Math.floor(30 * Math.random());
+	temp = temp + (temp % this.speed);
+	this.x = 40 + Math.floor((canvas.width - 70) * Math.random());
+	this.y = temp;
+	this.width = 50;
+	this.height = 50;
+	this.img = new Image();
+	this.img.src = "images/fuel-icon.png";
+	this.hit = 0;	
+}
+
+Fuel.prototype.inBounds = function() {
+  return this.x >= 0 && this.x <= canvas.width &&
+         this.y >= -100 && this.y <= canvas.height;  
+};
+
+Fuel.prototype.draw = function() {
+  ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+};
+
+Fuel.prototype.update = function() {
+	this.y += this.speed;
+	this.active = this.active && this.inBounds();
+	if(this.y == canvas.height + this.speed)
+		totalFuel--;
+};
+
+Fuel.prototype.die = function() {
+	this.hit++;
+	if(this.hit == 2) {
+		this.active = false;
+		//score += 10;
+		totalAstroid--;
+		this.hit = 0;
+		console.log("astroid destroyed!");
+	}
+	
+};
+
+
+/// END OF FUEL
 
 //// COLLISION
 
@@ -367,14 +482,15 @@ function collisionOccurs() {
 			}
 		});
 	});
-	// enemies.forEach(function(enemy) {
-	// 	if (collisionCheck(enemy, player)) {
-	// 		if (hit_delay === 0) {
-	// 			enemy.die();
-	// 			//player.getHit();
-	// 		}
-	// 	}
-	// });
+
+	enemies.forEach(function(enemy) {
+		if(collisionCheck(enemy, player)) {
+			// if(hit_delay === 0) {
+			// 	enemy.die();
+				//player.getHit();
+			//}
+		}
+	});
 }
 
 //// END OF COLLISION
