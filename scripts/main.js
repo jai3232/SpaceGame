@@ -30,9 +30,6 @@ window.onload = function(){
 	var pause = new Image();
 	var timer = new Image();
 	var fuel = new Image();
-	var fuel_icon = new Image();
-	var saturn = new Image();
-	var enemy = new Image();
 
 	background.src = "images/background.jpg";
 	background2.src = "images/background.jpg";
@@ -45,8 +42,6 @@ window.onload = function(){
 	pause.src = "images/pause.png";
 	timer.src = "images/timer.png";
 	fuel.src = "images/fuel.png";
-	fuel_icon.src = "images/fuel-icon.png";
-	saturn.src = "images/saturn.png";
 	
 	background.onload = function(){
 		ctx.drawImage(background, 0, 0);
@@ -85,25 +80,15 @@ window.onload = function(){
 	fuel.onload = function() {
 		ctx.drawImage(fuel, 530, 5, 30, 30);	
 	}
-	fuel_icon.onload = function() {
-		ctx.drawImage(fuel_icon, 700, 200, 50, 50);
-	}
-	// mars.onload = function() {
-	// 	ctx.drawImage(mars, 750, 50, 150, 150);
-	// }
-	// jupiter.onload = function() {
-	// 	//ctx.drawImage(jupiter,530, 150, 100, 100);	
-	// }
 
 	var bspeed = 0;
-	var marsSpeed = 750;
-	var saturnSpeed = 880;
 
 	document.addEventListener('keydown', keyPressed);
 	document.addEventListener('keyup', keyUp);
 	player = new Player();
-	var jupiter = new Jupiter();
-	var mars = new Mars();
+	//var jupiter = new Jupiter();
+	//var mars = new Mars();
+	var planet = new Planet();
 	//jup.draw();
 
 	function draw() {
@@ -114,19 +99,13 @@ window.onload = function(){
 		ctx.drawImage(background, bspeed, 40);
 		ctx.drawImage(background2, bspeed + canvas.width, 40);
 		ctx.drawImage(logo, 0, 0, 120, 80);
-		ctx.drawImage(saturn, saturnSpeed, 500, 70, 40);
-
-		// incrementing the x coordinate by one on each frame
+		
 		bspeed -= 0.5;
-		//jupiterSpeed -= 1;
-		marsSpeed -= 0.25;
-		saturnSpeed -= 3;
+		planet.update();
 
 		// if x coordinate exceeds the width, reset it to 0.
 		if(bspeed < -canvas.width) bspeed = 0;
-		//if(jupiterSpeed < -100) jupiterSpeed = canvas.width;
-		if(marsSpeed < -150) marsSpeed = canvas.width;
-		if(saturnSpeed < -150) saturnSpeed = canvas.width;
+		//if(saturnSpeed < -150) saturnSpeed = canvas.width;
 
 		// // call draw() again when a new frame needs to be drawn
 		player.draw();
@@ -184,11 +163,7 @@ window.onload = function(){
 			//console.log(enemy.active);
 			return fuel.active;
 		});
-
 		
-		jupiter.update();
-		mars.update();
-
 		//console.log(totalFuel);
 		collisionOccurs();
 		requestAnimationFrame(draw);
@@ -213,50 +188,49 @@ window.onload = function(){
 
 /// PLANETS ///
 
-function Jupiter() {
-	this.x = 500;
-	this.y = 250;
-	this.width =  100;
-	this.height = 100;
-	this.speed = -1;
-	this.img = new Image();
-	this.img.src = "images/jupiter.png";
-	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);	
+function Planet() {
+	//planet = ['Mars' => [], 'Jupiter' => [], 'saturn' => []];
+	this.mars = {x: 850, y: 50, width: 150, height: 150, speed: -0.25, deg: 1, rot: 0.1, img: new Image()};
+	this.mars.img.src = "images/mars.png";
+	this.jupiter = {x: 500, y: 250, width: 100, height: 100, speed: -1, deg: 1, rot: 0.5, img: new Image()};
+	this.jupiter.img.src = "images/jupiter.png";
+	this.saturn = {x: 900, y: 500, width: 70, height: 40, speed: -3, deg: 1, rot: 1, img: new Image()};
+	this.saturn.img.src = "images/saturn.png";
 }
-Jupiter.prototype.update = function() {
-	this.x += this.speed;
-	if(this.x < -100)
-		this.x = canvas.width + this.width;
-	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+Planet.prototype.update = function() {
+	this.mars.x += this.mars.speed;
+	this.mars.deg += this.mars.rot;
+	this.jupiter.x += this.jupiter.speed;
+	this.jupiter.deg += this.jupiter.rot;
+	this.saturn.x += this.saturn.speed;
+	this.saturn.deg += this.saturn.rot;
+
+	if(this.mars.x < -this.mars.width)
+		this.mars.x = canvas.width + this.mars.width;
+	if(this.jupiter.x < -this.jupiter.width)
+		this.jupiter.x = canvas.width + this.jupiter.width;
+	if(this.saturn.x < -this.saturn.width)
+		this.saturn.x = canvas.width + this.saturn.width;
+
+	//ctx.drawImage(this.mars.img, this.mars.x, this.mars.y, this.mars.width, this.mars.height);
+	//ctx.drawImage(this.jupiter.img, this.jupiter.x, this.jupiter.y, this.jupiter.width, this.jupiter.height);
+	//ctx.drawImage(this.saturn.img, this.saturn.x, this.saturn.y, this.saturn.width, this.saturn.height);
+	ctx.save();
+	ctx.translate(this.mars.x + this.mars.width / 2, this.mars.y + this.mars.height / 2);
+	ctx.rotate(this.mars.deg * Math.PI / 180);
+	ctx.drawImage(this.mars.img, -this.mars.width / 2, -this.mars.height / 2, this.mars.width, this.mars.height);	
+	ctx.restore();
+	ctx.save();
+	ctx.translate(this.jupiter.x + this.jupiter.width / 2, this.jupiter.y + this.jupiter.height / 2);
+	ctx.rotate(this.jupiter.deg * Math.PI / 180);
+	ctx.drawImage(this.jupiter.img, -this.jupiter.width / 2, -this.jupiter.height / 2, this.jupiter.width, this.jupiter.height);
+	ctx.restore();
+	ctx.save();
+	ctx.translate(this.saturn.x + this.saturn.width / 2, this.saturn.y + this.saturn.height / 2);
+	ctx.rotate(this.saturn.deg * Math.PI / 180);
+	ctx.drawImage(this.saturn.img, -this.saturn.width / 2, -this.saturn.height / 2, this.saturn.width, this.saturn.height);
+	ctx.restore();
 }
-
-function Mars() {	
-	this.x = 750;
-	this.y = 50;
-	this.width = 150;
-	this.height = 150;
-	this.speed = -0.25;
-	this.img = new Image();
-	this.img.src = "images/mars.png";
-	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-	// 	ctx.drawImage(saturn, saturnSpeed, 500, 70, 40);
-
-	// 	// incrementing the x coordinate by one on each frame
-	// 	bspeed -= 0.5;
-	// 	//jupiterSpeed -= 1;
-	// 	marsSpeed -= 0.25;
-	// 	saturnSpeed -= 3;
-	// 	var marsSpeed = 750;
-	// var saturnSpeed = 880;
-
-}
-Mars.prototype.update = function() {
-	this.x += this.speed;
-	if(this.x < -this.width)
-		this.x = canvas.width + this.width;
-	ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-}
-
 /// END PLANETS
 
 ///////PLAYER/////////
