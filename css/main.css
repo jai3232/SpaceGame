@@ -1,8 +1,79 @@
 body {
 	background: #aaa;
 }
+html,body { 
+	height: 100%; 
+	margin: 0px; 
+	padding: 0px;
+	font-family: arial;
+}
+#container {
+	display: flex;
+  	align-items: center;
+  	height: 100%;
+}
 #game {
 	/*width: 1024px;*/
 	margin: auto;
 	display: block;
+}
+#instruction {
+	width: 450px;
+	height: 480px;
+	background: rgba(238, 175, 16, 0.9);
+	position: absolute;
+	left: 0; 
+	right: 0; 
+	margin: auto;
+	border: red 10px solid;
+	border-radius: 20px;
+	
+}
+#instruction h2 {
+	color: #333;
+	text-align: center;
+}
+#instruction #list {
+	overflow-y: auto;
+	height: 75%;
+}
+ol li {
+	font-size: 0.85em;
+}
+#start {
+	display: block;
+	margin: 3px auto;
+	background: red;
+	border: 2px solid #600;
+	padding: 5px;
+	font-weight: bold;
+	border-radius: 10px;
+	color: #444;
+	background-position: center;
+ 	transition: background 1.8s;
+}
+#start:hover {
+	/*background: #241D4F;*/
+	background: #241D4F radial-gradient(circle, transparent 1%, #47a7f5 1%) center/15000%;
+}
+#start:active {
+	/*background: white;*/
+	background-color: #6eb9f7;
+	background-size: 100%;
+	transition: background 0s;
+}
+#start:focus {
+	outline: none;
+}
+#ranking {
+	width: 450px;
+	height: 480px;
+	background: rgba(238, 175, 100, 0.9);
+	position: absolute;
+	left: 0; 
+	right: 0; 
+	margin: auto;
+	border: red 10px solid;
+	border-radius: 20px;
+	display: none;	
 }

@@ -3,7 +3,6 @@
 var canvas;
 var ctx;
 var idFrame;
-var start = false;
 var pBullets = [];
 var enemies = [];
 var astroids = [];
@@ -15,29 +14,24 @@ var counterSecond = 0;
 var second = 0;
 var minute = 0;
 var hour = 0;
-var background = new Image();
-var background2 = new Image();
-var logo = new Image();
-var plus = new Image();
-var minus = new Image();
-var sound = new Image();
-var sound_down = new Image();
-var play = new Image();
-var pause = new Image();
-var fuel = new Image();
-var time = "00:00:00";
-var bspeed = 0;
-var player;
-var planet;
-	
 
 
-//window.onload = function(){
-	
+window.onload = function(){
 	canvas = document.getElementById("game");
 	ctx = canvas.getContext("2d");
-	player = new Player();
-	planet = new Planet()
+	
+	var background = new Image();
+	var background2 = new Image();
+	var logo = new Image();
+	var plus = new Image();
+	var minus = new Image();
+	var sound = new Image();
+	var sound_down = new Image();
+	var play = new Image();
+	var pause = new Image();
+	//var timer = new Image();
+	var fuel = new Image();
+	var time = "00:00:00";
 
 	background.src = "images/background.jpg";
 	background2.src = "images/background.jpg";
@@ -90,129 +84,129 @@ var planet;
 		ctx.drawImage(fuel, 570, 5, 30, 30);	
 	}
 
-	
+	var bspeed = 0;
 
-	// document.addEventListener('keydown', keyPressed);
-	// document.addEventListener('keyup', keyUp);
-	
+	document.addEventListener('keydown', keyPressed);
+	document.addEventListener('keyup', keyUp);
+	player = new Player();
+	//var jupiter = new Jupiter();
+	//var mars = new Mars();
+	var planet = new Planet();
+	//jup.draw();
 
-	
+	function draw() {
 
-	//draw();
+		counterSecond++;
+		if(counterSecond == 60) {
+			second++;
+			counterSecond = 0;
+		}
+		if(second === 60) {
+			minute++;
+			second = 0;
+		}
+		if(minute === 60) {
+			hour++
+			minute = 0;
+		}
+		time = hour + ":" + minute + ":" + second;
+		ctx.fillStyle = "#096643";
+		ctx.clearRect(460, 0, 100, 40);
+		ctx.fillRect(460, 0, 100, 40);
+		ctx.fillStyle = "white";
+		ctx.fillText(time, 460, 28);
+		
+		//clearing the canvas
+		ctx.clearRect(0, 40, canvas.width, canvas.height);
+
+		ctx.drawImage(background, bspeed, 40);
+		ctx.drawImage(background2, bspeed + canvas.width, 40);
+		ctx.drawImage(logo, 0, 0, 120, 80);
+		
+		bspeed -= 0.5;
+		planet.update();
+
+		// if x coordinate exceeds the width, reset it to 0.
+		if(bspeed < -canvas.width) bspeed = 0;
+		//if(saturnSpeed < -150) saturnSpeed = canvas.width;
+
+		// // call draw() again when a new frame needs to be drawn
+		player.draw();
+		//console.log('ib:'+player.inBounds());
+		pBullets.forEach(function(bullet) {
+			bullet.update();
+			bullet.draw();
+		});
+
+		pBullets = pBullets.filter(function(bullet) {
+			return bullet.active;
+		});
+
+		if(Math.random() < 0.14 && totalEnemy <= 7) {
+			enemies.push(new Enemy());
+			totalEnemy++;
+		}
+		  
+		enemies.forEach(function(enemy) {
+			enemy.update();
+			enemy.draw();
+		});
+
+		enemies = enemies.filter(function(enemy) {
+			//console.log(enemy.active);
+			return enemy.active;
+		});
+
+		if(Math.random() < 0.1 && totalAstroid <= 3) {
+			astroids.push(new Astroid());
+			totalAstroid++;
+		}
+
+		astroids.forEach(function(astroid) {
+			astroid.update();
+			astroid.draw();
+		});
+
+		astroids = astroids.filter(function(enemy) {
+			//console.log(enemy.active);
+			return enemy.active;
+		});
+
+		if(Math.random() < 0.1 && totalFuel <= 1) {
+			fuels.push(new Fuel());
+			totalFuel++;
+		}
+
+		fuels.forEach(function(fuel) {
+			fuel.update();
+			fuel.draw();
+		});
+
+		fuels = fuels.filter(function(fuel) {
+			//console.log(enemy.active);
+			return fuel.active;
+		});
+
+		//console.log(totalFuel);
+		collisionOccurs();
+		idFrame = requestAnimationFrame(draw);
+	}
+
+	draw();
 
 	//setInterval(update, 1000/fps);
 	//canvas.addEventListener('mousemove', function(e){
 		// var mousePos = calculateMousePos(e);
 		// paddle1Y = mousePos.y - paddleHeight/2;
 	//});
-	//canvas.addEventListener('mousedown', clicked, false);
+	canvas.addEventListener('mousedown', clicked, false);
 
-//};
+};
 
 
 // function update() {
 	
 // }
-
-
-function draws() {
-	
-	if(!start) return;
-	// counterSecond++;
-	// if(counterSecond == 60) {
-	// 	second++;
-	// 	counterSecond = 0;
-	// }
-	// if(second === 60) {
-	// 	minute++;
-	// 	second = 0;
-	// }
-	// if(minute === 60) {
-	// 	hour++
-	// 	minute = 0;
-	// }
-	// time = hour + ":" + minute + ":" + second;
-	// ctx.fillStyle = "#096643";
-	// ctx.clearRect(460, 0, 100, 40);
-	// ctx.fillRect(460, 0, 100, 40);
-	// ctx.fillStyle = "white";
-	// ctx.fillText(time, 460, 28);
-	
-	//clearing the canvas
-	ctx.clearRect(0, 40, canvas.width, canvas.height);
-
-	ctx.drawImage(background, bspeed, 40);
-	ctx.drawImage(background2, bspeed + canvas.width, 40);
-	ctx.drawImage(logo, 0, 0, 120, 80);
-	
-	bspeed -= 0.5;
-	planet.update();
-
-	// if x coordinate exceeds the width, reset it to 0.
-	if(bspeed < -canvas.width) bspeed = 0;
-	//if(saturnSpeed < -150) saturnSpeed = canvas.width;
-
-	// // call draw() again when a new frame needs to be drawn
-	// player.draw();
-	// //console.log('ib:'+player.inBounds());
-	// pBullets.forEach(function(bullet) {
-	// 	bullet.update();
-	// 	bullet.draw();
-	// });
-
-	// pBullets = pBullets.filter(function(bullet) {
-	// 	return bullet.active;
-	// });
-
-	// if(Math.random() < 0.14 && totalEnemy <= 7) {
-	// 	enemies.push(new Enemy());
-	// 	totalEnemy++;
-	// }
-	  
-	// enemies.forEach(function(enemy) {
-	// 	enemy.update();
-	// 	enemy.draw();
-	// });
-
-	// enemies = enemies.filter(function(enemy) {
-	// 	//console.log(enemy.active);
-	// 	return enemy.active;
-	// });
-
-	// if(Math.random() < 0.1 && totalAstroid <= 3) {
-	// 	astroids.push(new Astroid());
-	// 	totalAstroid++;
-	// }
-
-	// astroids.forEach(function(astroid) {
-	// 	astroid.update();
-	// 	astroid.draw();
-	// });
-
-	// astroids = astroids.filter(function(enemy) {
-	// 	//console.log(enemy.active);
-	// 	return enemy.active;
-	// });
-
-	// if(Math.random() < 0.1 && totalFuel <= 1) {
-	// 	fuels.push(new Fuel());
-	// 	totalFuel++;
-	// }
-
-	// fuels.forEach(function(fuel) {
-	// 	fuel.update();
-	// 	fuel.draw();
-	// });
-
-	// fuels = fuels.filter(function(fuel) {
-	// 	//console.log(enemy.active);
-	// 	return fuel.active;
-	// });
-
-	//console.log(totalFuel);
-	//collisionOccurs();
-	requestAnimationFrame(draws);
-}
 
 
 /// PLANETS ///
@@ -508,50 +502,45 @@ function clicked(e) {
 	//console.log("X:"+x+" y:"+y);
 }
 
-// function keyPressed(e) {
-//     switch(e.keyCode)
-//     {
-//         case 37:
-//             // Left Arrow key
-//             if(player.x > 0)
-//             	player.x -= player.speed;  
-//             console.log('Left:'+player.x);
-//             break;
-//         case 39:
-//             // Right Arrow key
-//             if(player.x < canvas.width - player.width)
-//             	player.x += player.speed;
-//             console.log('Right:'+player.x);
-//             break;
-//         case 38:
-//             // Up Arrow key
-//             if(player.y > 40)
-//             	player.y -= player.speed;
-//             //console.log('Up:'+spaceshipY);
-//             break;
-//         case 40:
-//             // Down Arrow key
-//             if(player.y < canvas.height - player.height)
-//             	player.y += player.speed;
-//             //console.log('Down:'+spaceshipY);
-//             break;
-//         case 32:
-//         	//pBullets.push(new Bullet({vel: 7, x: spaceshipX + spaceship.width / 4, y: spaceshipY + spaceship.height / 4}));
-//         	pBullets.push(new Bullet({vel: 7, x: player.x + player.width, y: player.y + player.height /  2}));
-//         	//console.log('Shoot');
-//         	break;
+function keyPressed(e) {
+    switch(e.keyCode)
+    {
+        case 37:
+            // Left Arrow key
+            if(player.x > 0)
+            	player.x -= player.speed;  
+            console.log('Left:'+player.x);
+            break;
+        case 39:
+            // Right Arrow key
+            if(player.x < canvas.width - player.width)
+            	player.x += player.speed;
+            console.log('Right:'+player.x);
+            break;
+        case 38:
+            // Up Arrow key
+            if(player.y > 40)
+            	player.y -= player.speed;
+            //console.log('Up:'+spaceshipY);
+            break;
+        case 40:
+            // Down Arrow key
+            if(player.y < canvas.height - player.height)
+            	player.y += player.speed;
+            //console.log('Down:'+spaceshipY);
+            break;
+        case 32:
+        	//pBullets.push(new Bullet({vel: 7, x: spaceshipX + spaceship.width / 4, y: spaceshipY + spaceship.height / 4}));
+        	pBullets.push(new Bullet({vel: 7, x: player.x + player.width, y: player.y + player.height /  2}));
+        	//console.log('Shoot');
+        	break;
 
-//     }
-// }
+    }
+}
 
 function keyUp(e) {
 
 }
-
-$("#start").click(function(){
-	start = true;;
-});
-draws()
 
 // function calculateMousePos(e) {
 // 	var rect = canvas.getBoundingClientRect();
