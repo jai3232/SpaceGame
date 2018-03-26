@@ -25,19 +25,31 @@ var sound_down = new Image();
 var play = new Image();
 var pause = new Image();
 var fuel = new Image();
+var fuelPoint = 20;
 var time = "00:00:00";
 var bspeed = 0;
 var player;
 var planet;
+var score = 0;
+var bgSound;
+var shootSound;
+var destroySound;
+
 	
 
 
-//window.onload = function(){
+window.onload = function(){
 	
 	canvas = document.getElementById("game");
 	ctx = canvas.getContext("2d");
 	player = new Player();
 	planet = new Planet()
+	bgSound = new Audio("sounds/background.mp3");
+	bgSound.play();
+	shootSound = new Audio("sounds/shoot.mp3");
+	destroySound = new Audio("sounds/destroyed.mp3");
+
+
 
 	background.src = "images/background.jpg";
 	background2.src = "images/background.jpg";
@@ -60,6 +72,9 @@ var planet;
 		ctx.font = "25px Arial";
 		ctx.fillText("Font",140,28);
 		ctx.fillText(time, 460, 28);
+		ctx.fillText(fuelPoint, 600, 28);
+		ctx.fillText("Score:", 650, 28);
+		ctx.fillText(score, 725, 28);
 		
 	}
 	logo.onload = function() {
@@ -92,7 +107,7 @@ var planet;
 
 	
 
-	// document.addEventListener('keydown', keyPressed);
+	document.addEventListener('keydown', keyPressed);
 	// document.addEventListener('keyup', keyUp);
 	
 
@@ -112,31 +127,39 @@ var planet;
 
 // function update() {
 	
-// }
+}
 
 
-function draws() {
-	
+function draw() {
+	//console.log(start);
 	if(!start) return;
-	// counterSecond++;
-	// if(counterSecond == 60) {
-	// 	second++;
-	// 	counterSecond = 0;
-	// }
-	// if(second === 60) {
-	// 	minute++;
-	// 	second = 0;
-	// }
-	// if(minute === 60) {
-	// 	hour++
-	// 	minute = 0;
-	// }
-	// time = hour + ":" + minute + ":" + second;
-	// ctx.fillStyle = "#096643";
-	// ctx.clearRect(460, 0, 100, 40);
-	// ctx.fillRect(460, 0, 100, 40);
-	// ctx.fillStyle = "white";
-	// ctx.fillText(time, 460, 28);
+	counterSecond++;
+	if(counterSecond == 60) {
+		second++;
+		counterSecond = 0;
+		fuelPoint -= 1;
+	}
+	if(second === 60) {
+		minute++;
+		second = 0;
+	}
+	if(minute === 60) {
+		hour++
+		minute = 0;
+	}
+	time = hour + ":" + minute + ":" + second;
+	if(fuelPoint > 40)
+			fuelPoint = 40;
+
+	ctx.fillStyle = "#096643";
+	ctx.clearRect(460, 0, 400, 40);
+	ctx.fillRect(460, 0, 400, 40);
+	ctx.fillStyle = "white";
+	ctx.fillText(time, 460, 28);
+	ctx.fillText(fuelPoint, 600, 28);
+	ctx.drawImage(fuel, 570, 5, 30, 30);
+	ctx.fillText("Score:", 650, 28);
+	ctx.fillText(score, 725, 28);
 	
 	//clearing the canvas
 	ctx.clearRect(0, 40, canvas.width, canvas.height);
@@ -153,65 +176,65 @@ function draws() {
 	//if(saturnSpeed < -150) saturnSpeed = canvas.width;
 
 	// // call draw() again when a new frame needs to be drawn
-	// player.draw();
+	player.draw();
 	// //console.log('ib:'+player.inBounds());
-	// pBullets.forEach(function(bullet) {
-	// 	bullet.update();
-	// 	bullet.draw();
-	// });
+	pBullets.forEach(function(bullet) {
+		bullet.update();
+		bullet.draw();
+	});
 
-	// pBullets = pBullets.filter(function(bullet) {
-	// 	return bullet.active;
-	// });
+	pBullets = pBullets.filter(function(bullet) {
+		return bullet.active;
+	});
 
-	// if(Math.random() < 0.14 && totalEnemy <= 7) {
-	// 	enemies.push(new Enemy());
-	// 	totalEnemy++;
-	// }
+	if(Math.random() < 0.14 && totalEnemy <= 7) {
+		enemies.push(new Enemy());
+		totalEnemy++;
+	}
 	  
-	// enemies.forEach(function(enemy) {
-	// 	enemy.update();
-	// 	enemy.draw();
-	// });
+	enemies.forEach(function(enemy) {
+		enemy.update();
+		enemy.draw();
+	});
 
-	// enemies = enemies.filter(function(enemy) {
-	// 	//console.log(enemy.active);
-	// 	return enemy.active;
-	// });
+	enemies = enemies.filter(function(enemy) {
+		//console.log(enemy.active);
+		return enemy.active;
+	});
 
-	// if(Math.random() < 0.1 && totalAstroid <= 3) {
-	// 	astroids.push(new Astroid());
-	// 	totalAstroid++;
-	// }
+	if(Math.random() < 0.1 && totalAstroid <= 3) {
+		astroids.push(new Astroid());
+		totalAstroid++;
+	}
 
-	// astroids.forEach(function(astroid) {
-	// 	astroid.update();
-	// 	astroid.draw();
-	// });
+	astroids.forEach(function(astroid) {
+		astroid.update();
+		astroid.draw();
+	});
 
-	// astroids = astroids.filter(function(enemy) {
-	// 	//console.log(enemy.active);
-	// 	return enemy.active;
-	// });
+	astroids = astroids.filter(function(enemy) {
+		//console.log(enemy.active);
+		return enemy.active;
+	});
 
-	// if(Math.random() < 0.1 && totalFuel <= 1) {
-	// 	fuels.push(new Fuel());
-	// 	totalFuel++;
-	// }
+	if(Math.random() < 0.1 && totalFuel <= 1) {
+		fuels.push(new Fuel());
+		totalFuel++;
+	}
 
-	// fuels.forEach(function(fuel) {
-	// 	fuel.update();
-	// 	fuel.draw();
-	// });
+	fuels.forEach(function(fuel) {
+		fuel.update();
+		fuel.draw();
+	});
 
-	// fuels = fuels.filter(function(fuel) {
-	// 	//console.log(enemy.active);
-	// 	return fuel.active;
-	// });
+	fuels = fuels.filter(function(fuel) {
+		//console.log(enemy.active);
+		return fuel.active;
+	});
 
 	//console.log(totalFuel);
-	//collisionOccurs();
-	requestAnimationFrame(draws);
+	collisionOccurs();
+	requestAnimationFrame(draw);
 }
 
 
@@ -219,11 +242,11 @@ function draws() {
 
 function Planet() {
 	//planet = ['Mars' => [], 'Jupiter' => [], 'saturn' => []];
-	this.mars = {x: 850, y: 50, width: 150, height: 150, speed: -0.25, deg: 1, rot: 0.1, img: new Image()};
+	this.mars = {x: 850, y: 50, width: 150, height: 150, speed: -2, deg: 1, rot: 0.2, img: new Image()};
 	this.mars.img.src = "images/mars.png";
 	this.jupiter = {x: 500, y: 250, width: 100, height: 100, speed: -1, deg: 1, rot: 0.5, img: new Image()};
 	this.jupiter.img.src = "images/jupiter.png";
-	this.saturn = {x: 900, y: 500, width: 70, height: 40, speed: -3, deg: 1, rot: 1, img: new Image()};
+	this.saturn = {x: 900, y: 500, width: 70, height: 40, speed: -0.25, deg: 1, rot: 1, img: new Image()};
 	this.saturn.img.src = "images/saturn.png";
 }
 Planet.prototype.update = function() {
@@ -356,7 +379,9 @@ Enemy.prototype.die = function() {
   this.active = false;
   //score += 10;
   totalEnemy--;
+  destroySound.play();
   console.log("die");
+  destroySound.play();
 };
 
 // END OF ENEMIES //
@@ -404,6 +429,7 @@ Astroid.prototype.die = function() {
 		//score += 10;
 		totalAstroid--;
 		this.hit = 0;
+		destroySound.play();
 		console.log("astroid destroyed!");
 	}
 	
@@ -444,15 +470,8 @@ Fuel.prototype.update = function() {
 };
 
 Fuel.prototype.die = function() {
-	this.hit++;
-	if(this.hit == 2) {
 		this.active = false;
-		//score += 10;
-		totalAstroid--;
-		this.hit = 0;
-		console.log("astroid destroyed!");
-	}
-	
+		totalFuel--;
 };
 
 
@@ -494,6 +513,13 @@ function collisionOccurs() {
 			//}
 		}
 	});
+
+	fuels.forEach(function(fuel){
+		if(collisionCheck(fuel, player)) {
+			fuel.die();
+			fuelPoint += 20;
+		}
+	});
 }
 
 //// END OF COLLISION
@@ -508,50 +534,54 @@ function clicked(e) {
 	//console.log("X:"+x+" y:"+y);
 }
 
-// function keyPressed(e) {
-//     switch(e.keyCode)
-//     {
-//         case 37:
-//             // Left Arrow key
-//             if(player.x > 0)
-//             	player.x -= player.speed;  
-//             console.log('Left:'+player.x);
-//             break;
-//         case 39:
-//             // Right Arrow key
-//             if(player.x < canvas.width - player.width)
-//             	player.x += player.speed;
-//             console.log('Right:'+player.x);
-//             break;
-//         case 38:
-//             // Up Arrow key
-//             if(player.y > 40)
-//             	player.y -= player.speed;
-//             //console.log('Up:'+spaceshipY);
-//             break;
-//         case 40:
-//             // Down Arrow key
-//             if(player.y < canvas.height - player.height)
-//             	player.y += player.speed;
-//             //console.log('Down:'+spaceshipY);
-//             break;
-//         case 32:
-//         	//pBullets.push(new Bullet({vel: 7, x: spaceshipX + spaceship.width / 4, y: spaceshipY + spaceship.height / 4}));
-//         	pBullets.push(new Bullet({vel: 7, x: player.x + player.width, y: player.y + player.height /  2}));
-//         	//console.log('Shoot');
-//         	break;
+function keyPressed(e) {
+    switch(e.keyCode)
+    {
+        case 37:
+            // Left Arrow key
+            if(player.x > 0)
+            	player.x -= player.speed;  
+            //console.log('Left:'+player.x);
+            break;
+        case 39:
+            // Right Arrow key
+            if(player.x < canvas.width - player.width)
+            	player.x += player.speed;
+            //console.log('Right:'+player.x);
+            break;
+        case 38:
+            // Up Arrow key
+            if(player.y > 40)
+            	player.y -= player.speed;
+            //console.log('Up:'+spaceshipY);
+            break;
+        case 40:
+            // Down Arrow key
+            if(player.y < canvas.height - player.height)
+            	player.y += player.speed;
+            //console.log('Down:'+spaceshipY);
+            break;
+        case 32:
+        	//pBullets.push(new Bullet({vel: 7, x: spaceshipX + spaceship.width / 4, y: spaceshipY + spaceship.height / 4}));
+        	pBullets.push(new Bullet({vel: 7, x: player.x + player.width, y: player.y + player.height /  2}));
+        	shootSound.play();
+        	//console.log('Shoot');
+        	break;
 
-//     }
-// }
+    }
+}
 
 function keyUp(e) {
 
 }
 
 $("#start").click(function(){
-	start = true;;
+	start = true;
+	draw();
+	$(this).blur();
+	$("#instruction").hide(500);
 });
-draws()
+draw();
 
 // function calculateMousePos(e) {
 // 	var rect = canvas.getBoundingClientRect();
