@@ -46,7 +46,6 @@ window.onload = function(){
 	player = new Player();
 	planet = new Planet()
 	bgSound = new Audio("sounds/background.mp3");
-	bgSound.loop = true;
 	bgSound.play();
 	shootSound = new Audio("sounds/shoot.mp3");
 	destroySound = new Audio("sounds/destroyed.mp3");
@@ -78,7 +77,7 @@ window.onload = function(){
 		ctx.fillText(fuelPoint, 600, 28);
 		ctx.fillText("Score:", 650, 28);
 		ctx.fillText(score, 725, 28);
-		
+		ctx.drawImage(controller, 1090, 500, 100, 100);
 	}
 	logo.onload = function() {
 		ctx.drawImage(logo, 0, 0, 120, 80);
@@ -111,7 +110,6 @@ window.onload = function(){
 	
 
 	document.addEventListener('keydown', keyPressed);
-	canvas.addEventListener('mousemove', pad)
 	// document.addEventListener('keyup', keyUp);
 	
 
@@ -125,6 +123,10 @@ window.onload = function(){
 		// paddle1Y = mousePos.y - paddleHeight/2;
 	//});
 	canvas.addEventListener('mousedown', clicked, false);
+	canvas.addEventListener('mousemove', pad, true);
+	canvas.addEventListener('mouseover', pad, true);
+	//$("#game").mouseover(pad);
+	//$("#game").hover(function(e){pad(e);});
 
 //};
 
@@ -132,7 +134,9 @@ window.onload = function(){
 // function update() {
 	
 }
-
+// $("#game").mouseover(function(e){
+// 	pad(e);
+// });
 
 function draw() {
 	//console.log(start);
@@ -155,7 +159,18 @@ function draw() {
 	if(fuelPoint > 40)
 			fuelPoint = 40;
 
-	// PAD CONTROLLER
+	if ($('#game:hover').length != 0) {
+    	// $("#game").trigger("hover");
+    	// $("#game").trigger("mouseover");
+    	// $("#game").trigger("mousemove");
+    	//$("#game").trigger("click");
+    	//event = $.Event("mouseover");
+    	//x = canvas.dispatchEvent(new Event('mouseover'));
+    	//console.log("e:"+x);
+    	//pad($(this).event);
+    	 var e = jQuery.Event( "hover" );
+    	 pad(e);
+	}
 	if($("#right:hover").length != 0) {
 		//console.log("right");
 		player.x += (player.speed/2); 
@@ -172,6 +187,7 @@ function draw() {
 		//console.log("right");
 		player.y += player.speed/2; 
 	}
+	
 
 	ctx.fillStyle = "#096643";
 	ctx.clearRect(460, 0, 400, 40);
@@ -189,7 +205,7 @@ function draw() {
 	ctx.drawImage(background, bspeed, 40);
 	ctx.drawImage(background2, bspeed + canvas.width, 40);
 	ctx.drawImage(logo, 0, 0, 120, 80);
-	ctx.drawImage(controller, 1100, 500, 100, 100);
+	ctx.drawImage(controller, 1090, 500, 100, 100);
 	
 	bspeed -= 0.5;
 	planet.update();
@@ -515,7 +531,6 @@ function collisionOccurs() {
 			if (collisionCheck(bullet, enemy)) {
 				bullet.die();
 				enemy.die();
-				score += 5;
 			}
 		});
 	});
@@ -591,50 +606,27 @@ function keyPressed(e) {
         	shootSound.play();
         	//console.log('Shoot');
         	break;
-        case 80:
-        	if(start == true) {
-	        	start = false;
-	        	bgSound.pause();
-	        }
-	        else {
-	        	start = true;
-	        	bgSound.play();
-	        	draw();
-	        }
 
     }
 }
 
 function pad(e) {
+	console.log(e.clientX);
 	var rect = canvas.getBoundingClientRect();
 	x = e.clientX - rect.left;
 	y = e.clientY - rect.top;
-	if(x >= 1100 && x <=1125 && y >= 530 && y <= 575) {
+	if(x > 1151 && x < 1182 && y > 528 && y < 566)
 		//console.log("right");
-		player.x -= player.speed;
-		if(player.x < 0)
-			player.x = 0;
-	}	
-	if(x >= 1175 && x <=1200 && y >= 530 && y <= 575) {
-		//console.log("left");
 		player.x += player.speed;
-		if(player.x > canvas.width - player.width)
-			player.x = canvas.width - player.width;
-	}
-	if(x >= 1125 && x <=1175 && y >= 500 && y <= 530) {
-		//console.log("up");
-		player.y -= player.speed;
-		if(player.y < 48)
-			player.y = 48;
-	}
-	if(x >= 1125 && x <=1175 && y >= 570 && y <= 600) {
-		//console.log("down");
-		player.y += player.speed;
-		if(player.y > canvas.height - player.height)
-			player.y = canvas.height - player.height;
-	}
-		
-
+	if(x > 1090 && x < 1121 && y > 528 && y < 566)
+		//console.log("left");
+		player.x -= player.speed;
+	if(x > 1121 && x < 1152 && y > 500 && y < 536)
+	 	//console.log("up");
+	 	player.y -= player.speed;
+	if(x > 1121 && x < 1152 && y > 570 && y < 595)
+	 	//console.log("down");
+	 	player.y += player.speed;
 }
 
 function keyUp(e) {
@@ -659,3 +651,4 @@ draw();
 // 		y:mouseY
 // 	}
 // }
+
